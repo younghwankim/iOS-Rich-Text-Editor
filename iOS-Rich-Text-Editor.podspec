@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
     s.author = {'Aryan Gh' => 'https://github.com/younghwankim/iOS-Rich-Text-Editor'}
     s.source = {:git => 'https://github.com/younghwankim/iOS-Rich-Text-Editor', :tag => '0.0.1'}
     s.platform = :ios, '6.0'
-    s.source_files = 'RichTextEditor/Source/*.{h,m}','RichTextEditor/Source/Categories/*.{h,m}'
+    s.source_files = 'RichTextEditor/Source/**/*.{h,m}'
     s.resources = ['RichTextEditor/Source/Assets/**/*']
     s.framework = 'Foundation', 'UIKit'
     s.requires_arc = true
