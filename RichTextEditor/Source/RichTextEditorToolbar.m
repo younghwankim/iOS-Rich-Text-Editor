@@ -34,17 +34,23 @@
 #import "WEPopoverController.h"
 #import "RichTextEditorToggleButton.h"
 #import "UIFont+RichTextEditor.h"
+#import "FontPickerController.h"
+#import "ColorPickerVController.h"
 
 #define ITEM_SEPARATOR_SPACE 5
 #define ITEM_TOP_AND_BOTTOM_BORDER 5
 #define ITEM_WITH 40
 
-@interface RichTextEditorToolbar() <RichTextEditorFontSizePickerViewControllerDelegate, RichTextEditorFontSizePickerViewControllerDataSource, RichTextEditorFontPickerViewControllerDelegate, RichTextEditorFontPickerViewControllerDataSource, RichTextEditorColorPickerViewControllerDataSource, RichTextEditorColorPickerViewControllerDelegate>
+@interface RichTextEditorToolbar() <RichTextEditorFontSizePickerViewControllerDelegate, RichTextEditorFontSizePickerViewControllerDataSource, RichTextEditorFontPickerViewControllerDelegate, RichTextEditorFontPickerViewControllerDataSource, RichTextEditorColorPickerViewControllerDataSource, RichTextEditorColorPickerViewControllerDelegate, FontPickerDelegate, ColorPickerVCDelegate, WEPopoverControllerDelegate>
 @property (nonatomic, strong) id <RichTextEditorPopover> popover;
+@property (nonatomic, strong) RichTextEditorToggleButton *btnDownOne;
+@property (nonatomic, strong) RichTextEditorToggleButton *btnDownTwo;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnBold;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnItalic;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnUnderline;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnStrikeThrough;
+@property (nonatomic, strong) RichTextEditorToggleButton *btnSuperScript;
+@property (nonatomic, strong) RichTextEditorToggleButton *btnSubScript;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnFontSize;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnFont;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnBackgroundColor;
@@ -57,6 +63,8 @@
 @property (nonatomic, strong) RichTextEditorToggleButton *btnParagraphOutdent;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnParagraphFirstLineHeadIndent;
 @property (nonatomic, strong) RichTextEditorToggleButton *btnBulletPoint;
+
+@property (nonatomic, strong) WEPopoverController *wePopoverController;
 @end
 
 @implementation RichTextEditorToolbar
@@ -132,28 +140,59 @@
 	
 	NSNumber *existingStrikeThrough = [attributes objectForKey:NSStrikethroughStyleAttributeName];
 	self.btnStrikeThrough.on = (!existingStrikeThrough || existingStrikeThrough.intValue == NSUnderlineStyleNone) ? NO :YES;
+    
+    if(attributes[@"NSSuperScript"]){
+        NSString *strScript = [NSString stringWithFormat:@"%@",attributes[@"NSSuperScript"]];
+        if([strScript isEqualToString:@"1"]){
+            self.btnSuperScript.on = YES;
+            self.btnSubScript.on = NO;
+        }else if([strScript isEqualToString:@"-1"]){
+            self.btnSuperScript.on = NO;
+            self.btnSubScript.on = YES;
+        }else{
+            self.btnSuperScript.on = NO;
+            self.btnSubScript.on = NO;
+        }
+    }else{
+        self.btnSuperScript.on = NO;
+        self.btnSubScript.on = NO;
+    }
 }
 
 #pragma mark - IBActions -
+- (void)downSelected:(UIButton *)sender
+{
+    [self.delegate richTextEditorToolbarDidSelectDown:self.btnDownOne.on];
+}
 
 - (void)boldSelected:(UIButton *)sender
 {
-	[self.delegate richTextEditorToolbarDidSelectBold];
+    [self.delegate richTextEditorToolbarDidSelectBold:self.btnBold.on];
 }
 
 - (void)italicSelected:(UIButton *)sender
 {
-	[self.delegate richTextEditorToolbarDidSelectItalic];
+	[self.delegate richTextEditorToolbarDidSelectItalic:self.btnItalic.on];
 }
 
 - (void)underLineSelected:(UIButton *)sender
 {
-	[self.delegate richTextEditorToolbarDidSelectUnderline];
+    [self.delegate richTextEditorToolbarDidSelectUnderline:self.btnUnderline.on];
 }
 
 - (void)strikeThroughSelected:(UIButton *)sender
 {
-	[self.delegate richTextEditorToolbarDidSelectStrikeThrough];
+    [self.delegate richTextEditorToolbarDidSelectStrikeThrough:self.btnStrikeThrough.on];
+}
+
+- (void)superScriptSelected:(UIButton *)sender
+{
+    [self.delegate richTextEditorToolbarDidSelectSuperScript:self.btnSuperScript.on];
+}
+
+- (void)subScriptSelected:(UIButton *)sender
+{
+    [self.delegate richTextEditorToolbarDidSelectSubScript:self.btnSubScript.on];
 }
 
 - (void)bulletPointSelected:(UIButton *)sender
@@ -178,37 +217,89 @@
 
 - (void)fontSizeSelected:(UIButton *)sender
 {
-	RichTextEditorFontSizePickerViewController *fontSizePicker = [[RichTextEditorFontSizePickerViewController alloc] init];
-	fontSizePicker.delegate = self;
-	fontSizePicker.dataSource = self;
-	[self presentViewController:fontSizePicker fromView:sender];
+    [self fontSelected:sender];
 }
 
 - (void)fontSelected:(UIButton *)sender
 {
-	RichTextEditorFontPickerViewController *fontPicker= [[RichTextEditorFontPickerViewController alloc] init];
-	fontPicker.fontNames = [self.dataSource fontFamilySelectionForRichTextEditorToolbar];
-	fontPicker.delegate = self;
-	fontPicker.dataSource = self;
-	[self presentViewController:fontPicker fromView:sender];
+    UIWindow *keyboardWindow = [UIApplication sharedApplication].windows.lastObject;
+    
+    FontPickerController *contentViewController = [[FontPickerController alloc]initWithNibName:@"FontPickerController" bundle:nil];
+    contentViewController.preferredContentSize = CGSizeMake(320,236);
+    contentViewController.fontPickerDelegate = self;
+    contentViewController.currentFont = self.btnFont.currentTitle;
+    contentViewController.currentSize = self.btnFontSize.currentTitle;
+
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    UIPopoverArrowDirection popOverDicrection = UIPopoverArrowDirectionDown;
+    
+    CGRect frame = CGRectMake(0, 550, 300, 10);
+    if([self isIPad]){
+        if(screenRect.size.height > screenRect.size.width){
+            frame = CGRectMake(200, 680, 300, 10);
+            popOverDicrection = UIPopoverArrowDirectionUp;
+        }else{
+            frame = CGRectMake(200, 600, 300, 10);
+        }
+    }else{
+        if(screenRect.size.height < screenRect.size.width){
+            frame = CGRectMake(200, 320, 300, 10);
+        }
+        contentViewController.view.transform = CGAffineTransformMakeScale(0.85, 0.85);
+    }
+    
+    self.wePopoverController = [[WEPopoverController alloc] initWithContentViewController:contentViewController] ;
+    
+    self.wePopoverController.delegate = self;
+    [self.wePopoverController presentPopoverFromRect:frame
+                                              inView:keyboardWindow
+                            permittedArrowDirections: popOverDicrection
+                                            animated:YES];
+    
+    [self.delegate richTextEditorToolbarDidScroll:NO];
 }
 
 - (void)textBackgroundColorSelected:(UIButton *)sender
 {
-	RichTextEditorColorPickerViewController *colorPicker = [[RichTextEditorColorPickerViewController alloc] init];
-	colorPicker.action = RichTextEditorColorPickerActionTextBackgroundColor;
-	colorPicker.delegate = self;
-	colorPicker.dataSource = self;
-	[self presentViewController:colorPicker fromView:sender];
+    [self textForegroundColorSelected:sender];
 }
 
 - (void)textForegroundColorSelected:(UIButton *)sender
 {
-	RichTextEditorColorPickerViewController *colorPicker = [[RichTextEditorColorPickerViewController alloc] init];
-	colorPicker.action = RichTextEditorColorPickerActionTextForegroudColor;
-	colorPicker.delegate = self;
-	colorPicker.dataSource = self;
-	[self presentViewController:colorPicker fromView:sender];
+    UIWindow *keyboardWindow = [UIApplication sharedApplication].windows.lastObject;
+    
+    ColorPickerVController *contentViewController = [[ColorPickerVController alloc]initWithNibName:@"ColorPickerVController" bundle:nil];
+    contentViewController.preferredContentSize = CGSizeMake(314,381);
+    contentViewController.colorPickerDelegate = self;
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    UIPopoverArrowDirection popOverDicrection = UIPopoverArrowDirectionDown;
+    
+    CGRect frame = CGRectMake(0, 630, 300, 10);
+    if([self isIPad]){
+        if(screenRect.size.height > screenRect.size.width){
+            frame = CGRectMake(250, 630, 300, 10);
+            popOverDicrection = UIPopoverArrowDirectionUp;
+        }else{
+            frame = CGRectMake(340, 700, 300, 10);
+        }
+    }else{
+        if(screenRect.size.height > screenRect.size.width){
+            contentViewController.view.transform = CGAffineTransformMakeScale(0.85, 0.85);
+        }else{
+            frame = CGRectMake(180, 100, 300, 10);
+            contentViewController.view.transform = CGAffineTransformMakeScale(0.75, 0.75);
+        }
+    }
+    
+    self.wePopoverController = [[WEPopoverController alloc] initWithContentViewController:contentViewController] ;
+    
+    self.wePopoverController.delegate = self;
+    [self.wePopoverController presentPopoverFromRect:frame
+                                              inView:keyboardWindow
+                            permittedArrowDirections:popOverDicrection
+                                            animated:YES];
+    [self.delegate richTextEditorToolbarDidScroll:NO];
 }
 
 - (void)textAlignmentSelected:(UIButton *)sender
@@ -245,7 +336,16 @@
 	
 	if (self.hidden)
 		return;
-	
+    
+    if ((features & RichTextEditorFeatureAll) && [self isIPhone] && [self isPortrait])
+    {
+        UIView *separatorView = [self separatorView];
+        [self addView:self.btnDownOne afterView:lastAddedView withSpacing:YES];
+        lastAddedView = self.btnDownOne;
+        [self addView:separatorView afterView:self.btnDownOne withSpacing:YES];
+        lastAddedView = separatorView;
+    }
+    
 	// Font selection
 	if (features & RichTextEditorFeatureFont || features & RichTextEditorFeatureAll)
 	{
@@ -277,7 +377,37 @@
 		[self addView:self.btnItalic afterView:lastAddedView withSpacing:YES];
 		lastAddedView = self.btnItalic;
 	}
-	
+    // Separator view after font properties.
+    if (features & RichTextEditorFeatureBold || features & RichTextEditorFeatureItalic || features & RichTextEditorFeatureAll)
+    {
+        UIView *separatorView = [self separatorView];
+        [self addView:separatorView afterView:lastAddedView withSpacing:YES];
+        lastAddedView = separatorView;
+    }
+
+    // Text color
+    if (features & RichTextEditorFeatureTextForegroundColor || features & RichTextEditorFeatureAll)
+    {
+        [self addView:self.btnForegroundColor afterView:lastAddedView withSpacing:YES];
+        lastAddedView = self.btnForegroundColor;
+    }
+
+//    
+//    // Background color
+//    if (features & RichTextEditorFeatureTextBackgroundColor || features & RichTextEditorFeatureAll)
+//    {
+//        [self addView:self.btnBackgroundColor afterView:lastAddedView withSpacing:YES];
+//        lastAddedView = self.btnBackgroundColor;
+//    }
+    
+    // Separator view after font properties.
+    if (features & RichTextEditorFeatureTextForegroundColor || features & RichTextEditorFeatureTextBackgroundColor || features & RichTextEditorFeatureAll)
+    {
+        UIView *separatorView = [self separatorView];
+        [self addView:separatorView afterView:lastAddedView withSpacing:YES];
+        lastAddedView = separatorView;
+    }
+    
 	// Underline
 	if (features & RichTextEditorFeatureUnderline || features & RichTextEditorFeatureAll)
 	{
@@ -292,6 +422,20 @@
 		lastAddedView = self.btnStrikeThrough;
 	}
 	
+    // SuperScript
+    if (features & RichTextEditorFeatureSubScript || features & RichTextEditorFeatureAll)
+    {
+        [self addView:self.btnSuperScript afterView:lastAddedView withSpacing:YES];
+        lastAddedView = self.btnSuperScript;
+    }
+    
+    // SubScript
+    if (features & RichTextEditorFeatureSubScript || features & RichTextEditorFeatureAll)
+    {
+        [self addView:self.btnSubScript afterView:lastAddedView withSpacing:YES];
+        lastAddedView = self.btnSubScript;
+    }
+    
 	// Separator view after font properties.
 	if (features & RichTextEditorFeatureBold || features & RichTextEditorFeatureItalic || features & RichTextEditorFeatureUnderline || features & RichTextEditorFeatureStrikeThrough || features & RichTextEditorFeatureAll)
 	{
@@ -358,38 +502,22 @@
 		[self addView:separatorView afterView:lastAddedView withSpacing:YES];
 		lastAddedView = separatorView;
 	}
-	
-	// Background color
-	if (features & RichTextEditorFeatureTextBackgroundColor || features & RichTextEditorFeatureAll)
-	{
-		[self addView:self.btnBackgroundColor afterView:lastAddedView withSpacing:YES];
-		lastAddedView = self.btnBackgroundColor;
-	}
-	
-	// Text color
-	if (features & RichTextEditorFeatureTextForegroundColor || features & RichTextEditorFeatureAll)
-	{
-		[self addView:self.btnForegroundColor afterView:lastAddedView withSpacing:YES];
-		lastAddedView = self.btnForegroundColor;
-	}
-	
-	// Separator view after color section
-	if (features & RichTextEditorFeatureTextBackgroundColor || features & RichTextEditorFeatureTextForegroundColor || features & RichTextEditorFeatureAll)
-	{
-		UIView *separatorView = [self separatorView];
-		[self addView:separatorView afterView:lastAddedView withSpacing:YES];
-		lastAddedView = separatorView;
-	}
+    
+    // Down
+    if ((features & RichTextEditorFeatureAll) && [self isIPhone] && [self isPortrait])
+    {
+        [self addView:self.btnDownTwo afterView:lastAddedView withSpacing:YES];
+        lastAddedView = self.btnDownTwo;
+    }
 }
 
 - (void)initializeButtons
 {
 	self.btnFont = [self buttonWithImageNamed:@"dropDownTriangle.png"
-										width:120
+										width:130
 								  andSelector:@selector(fontSelected:)];
 	[self.btnFont setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
 	[self.btnFont setTitle:@"Font" forState:UIControlStateNormal];
-	
 	
 	self.btnFontSize = [self buttonWithImageNamed:@"dropDownTriangle.png"
 											width:50
@@ -397,6 +525,14 @@
 	[self.btnFontSize setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
 	[self.btnFontSize setTitle:@"14" forState:UIControlStateNormal];
 	
+    self.btnDownOne = [self buttonWithImageNamed:@"s_down_arrow.png"
+                                  andSelector:@selector(downSelected:)];
+    self.btnDownOne.frame = CGRectMake(0, 0, 18, 18);
+    
+    self.btnDownTwo = [self buttonWithImageNamed:@"s_down_arrow.png"
+                                     andSelector:@selector(downSelected:)];
+    self.btnDownTwo.frame = CGRectMake(0, 0, 18, 18);
+    
 	self.btnBold = [self buttonWithImageNamed:@"bold.png"
 								  andSelector:@selector(boldSelected:)];
 	
@@ -411,7 +547,12 @@
 	self.btnStrikeThrough = [self buttonWithImageNamed:@"strikethrough"
 										   andSelector:@selector(strikeThroughSelected:)];
 	
-	
+    self.btnSuperScript = [self buttonWithImageNamed:@"superscript.png"
+                                       andSelector:@selector(superScriptSelected:)];
+    
+    self.btnSubScript = [self buttonWithImageNamed:@"subscript.png"
+                                           andSelector:@selector(subScriptSelected:)];
+    
 	self.btnTextAlignmentLeft = [self buttonWithImageNamed:@"justifyleft.png"
 											   andSelector:@selector(textAlignmentSelected:)];
 	
@@ -624,4 +765,65 @@
 	return ([self.dataSource presentationStyleForRichTextEditorToolbar] == RichTextEditorToolbarPresentationStyleModal) ? YES: NO;
 }
 
+#pragma mark - FontPickerDelegate
+
+- (void) closeFontPicker {
+    if (self.wePopoverController != nil && self.wePopoverController.popoverVisible) {
+        [self.wePopoverController dismissPopoverAnimated:YES];
+        self.wePopoverController = nil;
+        [self.delegate richTextEditorToolbarDidScroll:YES];
+    }
+}
+
+- (void) selectedFont:(NSString *)fontName
+{
+    [self.delegate richTextEditorToolbarDidSelectFontWithName:fontName];
+}
+
+- (void) selectedFontSize:(NSNumber *)fontSize
+{
+    [self.delegate richTextEditorToolbarDidSelectFontSize:fontSize];
+}
+
+#pragma mark - ColorPickerVCDelegate
+- (void) closeColorPicker {
+    if (self.wePopoverController != nil && self.wePopoverController.popoverVisible) {
+        [self.wePopoverController dismissPopoverAnimated:YES];
+        self.wePopoverController = nil;
+        [self.delegate richTextEditorToolbarDidScroll:YES];
+    }
+}
+
+- (void) selectedColor:(UIColor *)color {
+    [self.delegate richTextEditorToolbarDidSelectTextForegroundColor:color];
+}
+
+- (void) selectedHighlightColor:(UIColor *)color {
+    [self.delegate richTextEditorToolbarDidSelectTextBackgroundColor:color];
+}
+
+#pragma mark - Util
+
+- (BOOL)isIPad {
+    return ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad);
+}
+
+- (BOOL)isIPhone {
+    return ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone);
+}
+
+- (BOOL)isPortrait {
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    if(screenRect.size.height < screenRect.size.width){
+        return NO;
+    }else{
+        return YES;
+    }
+}
+
+#pragma mark - WEPopoverControllerDelegate
+- (BOOL)popoverControllerShouldDismissPopover:(WEPopoverController *)popoverController {
+    [self.delegate richTextEditorToolbarDidScroll:YES];
+    return YES;
+}
 @end

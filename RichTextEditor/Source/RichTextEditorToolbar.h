@@ -45,22 +45,27 @@ typedef enum{
 	RichTextEditorFeatureItalic							= 1 << 3,
 	RichTextEditorFeatureUnderline						= 1 << 4,
 	RichTextEditorFeatureStrikeThrough					= 1 << 5,
-	RichTextEditorFeatureTextAlignmentLeft				= 1 << 6,
-	RichTextEditorFeatureTextAlignmentCenter			= 1 << 7,
-	RichTextEditorFeatureTextAlignmentRight				= 1 << 8,
-	RichTextEditorFeatureTextAlignmentJustified			= 1 << 9,
-	RichTextEditorFeatureTextBackgroundColor			= 1 << 10,
-	RichTextEditorFeatureTextForegroundColor			= 1 << 11,
-	RichTextEditorFeatureParagraphIndentation			= 1 << 12,
-	RichTextEditorFeatureParagraphFirstLineIndentation	= 1 << 13,
-	RichTextEditorFeatureAll							= 1 << 14
+    RichTextEditorFeatureSuperScript					= 1 << 6,
+    RichTextEditorFeatureSubScript                      = 1 << 7,
+	RichTextEditorFeatureTextAlignmentLeft				= 1 << 8,
+	RichTextEditorFeatureTextAlignmentCenter			= 1 << 9,
+	RichTextEditorFeatureTextAlignmentRight				= 1 << 10,
+	RichTextEditorFeatureTextAlignmentJustified			= 1 << 11,
+	RichTextEditorFeatureTextBackgroundColor			= 1 << 12,
+	RichTextEditorFeatureTextForegroundColor			= 1 << 13,
+	RichTextEditorFeatureParagraphIndentation			= 1 << 14,
+	RichTextEditorFeatureParagraphFirstLineIndentation	= 1 << 15,
+	RichTextEditorFeatureAll							= 1 << 16
 }RichTextEditorFeature;
 
 @protocol RichTextEditorToolbarDelegate <UIScrollViewDelegate>
-- (void)richTextEditorToolbarDidSelectBold;
-- (void)richTextEditorToolbarDidSelectItalic;
-- (void)richTextEditorToolbarDidSelectUnderline;
-- (void)richTextEditorToolbarDidSelectStrikeThrough;
+- (void)richTextEditorToolbarDidSelectDown:(BOOL)bDown;
+- (void)richTextEditorToolbarDidSelectBold:(BOOL)bBold;
+- (void)richTextEditorToolbarDidSelectItalic:(BOOL)bItalic;
+- (void)richTextEditorToolbarDidSelectUnderline:(BOOL)bUnderline;
+- (void)richTextEditorToolbarDidSelectStrikeThrough:(BOOL)bStrikeThrough;
+- (void)richTextEditorToolbarDidSelectSuperScript:(BOOL)bSuperScript;
+- (void)richTextEditorToolbarDidSelectSubScript:(BOOL)bSubScript;
 - (void)richTextEditorToolbarDidSelectBulletPoint;
 - (void)richTextEditorToolbarDidSelectParagraphFirstLineHeadIndent;
 - (void)richTextEditorToolbarDidSelectParagraphIndentation:(ParagraphIndentation)paragraphIndentation;
@@ -69,6 +74,7 @@ typedef enum{
 - (void)richTextEditorToolbarDidSelectTextBackgroundColor:(UIColor *)color;
 - (void)richTextEditorToolbarDidSelectTextForegroundColor:(UIColor *)color;
 - (void)richTextEditorToolbarDidSelectTextAlignment:(NSTextAlignment)textAlignment;
+- (void)richTextEditorToolbarDidScroll:(BOOL)bScroll;
 @end
 
 @protocol RichTextEditorToolbarDataSource <NSObject>

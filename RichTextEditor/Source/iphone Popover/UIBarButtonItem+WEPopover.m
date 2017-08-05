@@ -11,10 +11,10 @@
 
 @implementation UIBarButtonItem(WEPopover)
 
-- (CGRect)frameInView:(UIView *)v {
+- (CGRect)weFrameInView:(UIView *)v {
 	
 	UIView *theView = self.customView;
-	if (!theView && [self respondsToSelector:@selector(view)]) {
+	if (!theView.superview && [self respondsToSelector:@selector(view)]) {
 		theView = [self performSelector:@selector(view)];
 	}
 	
@@ -32,7 +32,7 @@
 	}
 }
 
-- (UIView *)superview {
+- (UIView *)weSuperview {
 	
 	UIView *theView = self.customView;
 	if (!theView && [self respondsToSelector:@selector(view)]) {

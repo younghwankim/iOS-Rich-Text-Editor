@@ -191,17 +191,29 @@
 }
 
 #pragma mark - RichTextEditorToolbarDelegate Methods -
-
-- (void)richTextEditorToolbarDidSelectBold
+- (void)richTextEditorToolbarDidSelectDown:(BOOL)bDown
 {
-	UIFont *font = [self fontAtIndex:self.selectedRange.location];
-	[self applyFontAttributesToSelectedRangeWithBoldTrait:[NSNumber numberWithBool:![font isBold]] italicTrait:nil fontName:nil fontSize:nil];
+    [self endEditing:YES];
 }
 
-- (void)richTextEditorToolbarDidSelectItalic
+- (void)richTextEditorToolbarDidSelectBold:(BOOL)bBold
 {
 	UIFont *font = [self fontAtIndex:self.selectedRange.location];
-	[self applyFontAttributesToSelectedRangeWithBoldTrait:nil italicTrait:[NSNumber numberWithBool:![font isItalic]] fontName:nil fontSize:nil];
+    if(self.selectedRange.length == 0){
+        [self applyFontAttributesToSelectedRangeWithBoldTrait:[NSNumber numberWithBool:!bBold] italicTrait:nil fontName:nil fontSize:nil];
+    }else{
+        [self applyFontAttributesToSelectedRangeWithBoldTrait:[NSNumber numberWithBool:![font isBold]] italicTrait:nil fontName:nil fontSize:nil];
+    }
+}
+
+- (void)richTextEditorToolbarDidSelectItalic:(BOOL)bItalic
+{
+	UIFont *font = [self fontAtIndex:self.selectedRange.location];
+    if(self.selectedRange.length == 0){
+        [self applyFontAttributesToSelectedRangeWithBoldTrait:nil italicTrait:[NSNumber numberWithBool:!bItalic] fontName:nil fontSize:nil];
+    }else{
+        [self applyFontAttributesToSelectedRangeWithBoldTrait:nil italicTrait:[NSNumber numberWithBool:![font isItalic]] fontName:nil fontSize:nil];
+    }
 }
 
 - (void)richTextEditorToolbarDidSelectFontSize:(NSNumber *)fontSize
@@ -224,7 +236,7 @@
 	[self applyAttrubutesToSelectedRange:color forKey:NSForegroundColorAttributeName];
 }
 
-- (void)richTextEditorToolbarDidSelectUnderline
+- (void)richTextEditorToolbarDidSelectUnderline:(BOOL)bUnderline
 {
 	NSDictionary *dictionary = [self dictionaryAtIndex:self.selectedRange.location];
 	NSNumber *existingUnderlineStyle = [dictionary objectForKey:NSUnderlineStyleAttributeName];
@@ -234,20 +246,61 @@
 	else
 		existingUnderlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
 	
-	[self applyAttrubutesToSelectedRange:existingUnderlineStyle forKey:NSUnderlineStyleAttributeName];
+    if(self.selectedRange.length == 0){
+        [self applyAttrubutesToSelectedRange:[NSNumber numberWithBool:!bUnderline] forKey:NSUnderlineStyleAttributeName];
+    }else{
+        [self applyAttrubutesToSelectedRange:existingUnderlineStyle forKey:NSUnderlineStyleAttributeName];
+    }
 }
 
-- (void)richTextEditorToolbarDidSelectStrikeThrough
+- (void)richTextEditorToolbarDidSelectStrikeThrough:(BOOL)bStrikeThrough
 {
 	NSDictionary *dictionary = [self dictionaryAtIndex:self.selectedRange.location];
-	NSNumber *existingUnderlineStyle = [dictionary objectForKey:NSStrikethroughStyleAttributeName];
+	NSNumber *existingStrikeThroughStyle = [dictionary objectForKey:NSStrikethroughStyleAttributeName];
 	
-	if (!existingUnderlineStyle || existingUnderlineStyle.intValue == NSUnderlineStyleNone)
-		existingUnderlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleSingle];
+	if (!existingStrikeThroughStyle || existingStrikeThroughStyle.intValue == NSUnderlineStyleNone)
+		existingStrikeThroughStyle = [NSNumber numberWithInteger:NSUnderlineStyleSingle];
 	else
-		existingUnderlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
+		existingStrikeThroughStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
 	
-	[self applyAttrubutesToSelectedRange:existingUnderlineStyle forKey:NSStrikethroughStyleAttributeName];
+    if(self.selectedRange.length == 0){
+        [self applyAttrubutesToSelectedRange:[NSNumber numberWithBool:!bStrikeThrough] forKey:NSStrikethroughStyleAttributeName];
+    }else{
+        [self applyAttrubutesToSelectedRange:existingStrikeThroughStyle forKey:NSStrikethroughStyleAttributeName];
+    }
+}
+
+- (void)richTextEditorToolbarDidSelectSuperScript:(BOOL)bSuperScript
+{    
+    NSMutableAttributedString *attributedString = [self.attributedText mutableCopy];
+    NSRange range = self.selectedRange;
+    
+    if(bSuperScript){
+        [attributedString addAttribute:@"NSSuperScript" value:@"0" range:range];
+    }else{
+        [attributedString addAttribute:@"NSSuperScript" value:@"1" range:range];
+    }
+
+    [self setAttributedText:attributedString];
+    [self setSelectedRange:range];
+    
+    [self updateToolbarState];
+}
+
+- (void)richTextEditorToolbarDidSelectSubScript:(BOOL)bSubScript
+{
+    NSMutableAttributedString *attributedString = [self.attributedText mutableCopy];
+    NSRange range = self.selectedRange;
+    
+    if(bSubScript){
+        [attributedString addAttribute:@"NSSuperScript" value:@"0" range:range];
+    }else{
+        [attributedString addAttribute:@"NSSuperScript" value:@"-1" range:range];
+    }
+    [self setAttributedText:attributedString];
+    [self setSelectedRange:range];
+    
+    [self updateToolbarState];
 }
 
 - (void)richTextEditorToolbarDidSelectParagraphIndentation:(ParagraphIndentation)paragraphIndentation
@@ -321,6 +374,11 @@
 {
     // TODO: implement this
 }
+
+- (void)richTextEditorToolbarDidScroll:(BOOL)bScroll {
+    self.scrollEnabled = bScroll;
+}
+
 
 #pragma mark - Private Methods -
 
@@ -609,6 +667,154 @@
 - (UIViewController *)firsAvailableViewControllerForRichTextEditorToolbar
 {
 	return [self firstAvailableViewController];
+}
+
+- (void) savePDFFile:(NSString *)pdfFileName completion:(void (^)(BOOL success))completionBlock {
+    // Prepare the text using a Core Text Framesetter.
+    CFAttributedStringRef currentText = CFBridgingRetain(self.attributedText);//CFAttributedStringCreate(NULL, (CFStringRef)self.text, NULL);
+    if (currentText) {
+        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(currentText);
+        if (framesetter) {
+            
+            NSString *pdfFileName = [self getPDFFileName];
+            // Create the PDF context using the default page size of 612 x 792.
+            BOOL bReturn = UIGraphicsBeginPDFContextToFile(pdfFileName, CGRectZero, nil);
+            
+            if(bReturn==NO){
+                CFRelease(framesetter);
+                CFRelease(currentText);
+                if(completionBlock != nil) {
+                    completionBlock(NO);
+                    return;
+                }
+            }
+            
+            CFRange currentRange = CFRangeMake(0, 0);
+            NSInteger currentPage = 0;
+            BOOL done = NO;
+            
+            do {
+                // Mark the beginning of a new page.
+                UIGraphicsBeginPDFPageWithInfo(CGRectMake(0, 0, 612, 792), nil);
+                
+                // Draw a page number at the bottom of each page.
+                currentPage++;
+                [self drawPageNumber:currentPage];
+                
+                // Render the current page and update the current range to
+                // point to the beginning of the next page.
+                currentRange = [self renderPage:currentPage withTextRange:currentRange andFramesetter:framesetter];
+                
+                // If we're at the end of the text, exit the loop.
+                if (currentRange.location == CFAttributedStringGetLength((CFAttributedStringRef)currentText))
+                    done = YES;
+            } while (!done);
+            
+            // Close the PDF context and write the contents out.
+            UIGraphicsEndPDFContext();
+            
+            // Release the framewetter.
+            CFRelease(framesetter);
+            CFRelease(currentText);
+            if(completionBlock != nil) {
+                completionBlock(YES);
+                return;
+            }
+        } else {
+            NSLog(@"Could not create the framesetter needed to lay out the atrributed string.");
+            CFRelease(currentText);
+            if(completionBlock != nil) {
+                completionBlock(NO);
+                return;
+            }
+        }
+    } else {
+        NSLog(@"Could not create the attributed string for the framesetter");
+        if(completionBlock != nil) {
+            completionBlock(NO);
+            return;
+        }
+    }
+}
+
+- (void) saveRTFFile:(NSString *)fileName completion:(void (^)(BOOL success))completionBlock {
+    
+    NSData *data = [self.attributedText dataFromRange:(NSRange){0, [self.attributedText length]} documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFTextDocumentType} error:NULL];
+    BOOL bReturn = [data writeToFile:fileName atomically:YES];
+    
+    if(completionBlock != nil) {
+        completionBlock(bReturn);
+    }
+}
+
+- (NSString *) getPDFFileName {
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path_pdf = [NSString stringWithFormat:@"%@/%@",[paths objectAtIndex:0],@"test11111.pdf"];
+    NSString *path_rtf = [NSString stringWithFormat:@"%@/%@",[paths objectAtIndex:0],@"test11111.rtf"];
+    NSLog(@"Saved PDF File = %@",path_pdf);
+    
+    NSData *data = [self.attributedText dataFromRange:(NSRange){0, [self.attributedText length]} documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFTextDocumentType} error:NULL];
+    [data writeToFile:path_rtf atomically:YES];
+    
+    return path_pdf;
+}
+
+// Use Core Text to draw the text in a frame on the page.
+- (CFRange)renderPage:(NSInteger)pageNum withTextRange:(CFRange)currentRange
+       andFramesetter:(CTFramesetterRef)framesetter
+{
+    // Get the graphics context.
+    CGContextRef    currentContext = UIGraphicsGetCurrentContext();
+    
+    // Put the text matrix into a known state. This ensures
+    // that no old scaling factors are left in place.
+    CGContextSetTextMatrix(currentContext, CGAffineTransformIdentity);
+    
+    // Create a path object to enclose the text. Use 72 point
+    // margins all around the text.
+    CGRect    frameRect = CGRectMake(72, 72, 468, 648);
+    CGMutablePathRef framePath = CGPathCreateMutable();
+    CGPathAddRect(framePath, NULL, frameRect);
+    
+    // Get the frame that will do the rendering.
+    // The currentRange variable specifies only the starting point. The framesetter
+    // lays out as much text as will fit into the frame.
+    CTFrameRef frameRef = CTFramesetterCreateFrame(framesetter, currentRange, framePath, NULL);
+    CGPathRelease(framePath);
+    
+    // Core Text draws from the bottom-left corner up, so flip
+    // the current transform prior to drawing.
+    CGContextTranslateCTM(currentContext, 0, 792);
+    CGContextScaleCTM(currentContext, 1.0, -1.0);
+    
+    // Draw the frame.
+    CTFrameDraw(frameRef, currentContext);
+    
+    // Update the current range based on what was drawn.
+    currentRange = CTFrameGetVisibleStringRange(frameRef);
+    currentRange.location += currentRange.length;
+    currentRange.length = 0;
+    CFRelease(frameRef);
+    
+    return currentRange;
+}
+
+- (void)drawPageNumber:(NSInteger)pageNum
+{
+    NSString *pageString = [NSString stringWithFormat:@"Page %ld", (long)pageNum];
+    UIFont *theFont = [UIFont systemFontOfSize:12];
+    CGSize maxSize = CGSizeMake(612, 72);
+    
+    CGSize pageStringSize = [pageString sizeWithFont:theFont
+                                   constrainedToSize:maxSize
+                                       lineBreakMode:NSLineBreakByClipping];
+    CGRect stringRect = CGRectMake(((612.0 - pageStringSize.width) / 2.0),
+                                   720.0 + ((72.0 - pageStringSize.height) / 2.0),
+                                   pageStringSize.width,
+                                   pageStringSize.height);
+    
+    [pageString drawInRect:stringRect withFont:theFont];
 }
 
 @end

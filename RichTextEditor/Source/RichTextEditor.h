@@ -49,5 +49,8 @@
 - (void)setBorderColor:(UIColor*)borderColor;
 - (void)setBorderWidth:(CGFloat)borderWidth;
 - (NSString *)htmlString;
+- (void) savePDFFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
+- (void) saveRTFFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
+
 
 @end
