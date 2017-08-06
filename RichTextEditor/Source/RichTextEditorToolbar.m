@@ -517,7 +517,7 @@
 										width:130
 								  andSelector:@selector(fontSelected:)];
 	[self.btnFont setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
-	[self.btnFont setTitle:@"Font" forState:UIControlStateNormal];
+	[self.btnFont setTitle:@"Helvetica" forState:UIControlStateNormal];
 	
 	self.btnFontSize = [self buttonWithImageNamed:@"dropDownTriangle.png"
 											width:50
