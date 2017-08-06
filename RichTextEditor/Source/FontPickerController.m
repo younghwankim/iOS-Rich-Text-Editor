@@ -26,12 +26,12 @@
 - (void)viewDidLoad
 {
     if(self.fontNames == nil || [self.fontNames count]==0){
-        self.fontNames = @[@"American Typewriter",@"Apple SD Gothic Neo",@"Arial",@"Arial Rounded MT Bold",@"Avenir",@"Courier New",@"Georgia",
+        self.fontNames = @[@"American Typewriter",@"Apple SD Gothic Neo",@"Arial",@"Arial Rounded MT Bold",@"Avenir",@"Avenir Next",@"Courier",@"Courier New",@"Georgia",
                            @"Helvetica",@"Helvetica Neue",@"Menlo",@"Optima",@"Papyrus",@"Times New Roman",@"Trebuchet MS",@"Verdana",@"Zapfino"];
     }
     
     if(self.fontSizes == nil || [self.fontSizes count]==0){
-        self.fontSizes =  @[@9,@10,@11,@12,@13,@14,@17,@18,@24,@36,@48,@64,@72];
+        self.fontSizes =  @[@9,@10,@11,@12,@13,@14,@15,@16,@17,@18,@20,@24,@36,@48,@64,@72];
     }
     
     [super viewDidLoad];

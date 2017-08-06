@@ -675,8 +675,6 @@
     if (currentText) {
         CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(currentText);
         if (framesetter) {
-            
-            NSString *pdfFileName = [self getPDFFileName];
             // Create the PDF context using the default page size of 612 x 792.
             BOOL bReturn = UIGraphicsBeginPDFContextToFile(pdfFileName, CGRectZero, nil);
             
