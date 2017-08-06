@@ -224,7 +224,7 @@
 {
     UIWindow *keyboardWindow = [UIApplication sharedApplication].windows.lastObject;
     
-    FontPickerController *contentViewController = [[FontPickerController alloc]initWithNibName:@"FontPickerController" bundle:nil];
+    FontPickerController *contentViewController = [[FontPickerController alloc]initWithNibName:@"FontPickerController" bundle:[NSBundle bundleForClass:[self class]]];
     contentViewController.preferredContentSize = CGSizeMake(320,236);
     contentViewController.fontPickerDelegate = self;
     contentViewController.currentFont = self.btnFont.currentTitle;
@@ -268,7 +268,7 @@
 {
     UIWindow *keyboardWindow = [UIApplication sharedApplication].windows.lastObject;
     
-    ColorPickerVController *contentViewController = [[ColorPickerVController alloc]initWithNibName:@"ColorPickerVController" bundle:nil];
+    ColorPickerVController *contentViewController = [[ColorPickerVController alloc]initWithNibName:@"ColorPickerVController" bundle:[NSBundle bundleForClass:[self class]]];
     contentViewController.preferredContentSize = CGSizeMake(314,381);
     contentViewController.colorPickerDelegate = self;
     
@@ -594,7 +594,9 @@
 	[button.titleLabel setFont:[UIFont boldSystemFontOfSize:10]];
 	[button.titleLabel setTextColor:[UIColor blackColor]];
 	[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	[button setImage:[UIImage imageNamed:image] forState:UIControlStateNormal];
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    UIImage *img = [UIImage imageNamed:image inBundle:bundle compatibleWithTraitCollection:nil];
+	[button setImage:img forState:UIControlStateNormal];
 	
 	return button;
 }
