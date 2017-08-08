@@ -745,6 +745,24 @@
     }
 }
 
+- (void) saveTXTFile:(NSString *)fileName completion:(void (^)(BOOL success))completionBlock {
+    
+    NSError *error;
+    BOOL succeed = [self.attributedText.string writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if(completionBlock != nil) {
+        completionBlock(succeed);
+    }
+}
+
+- (void) saveHTMLFile:(NSString *)fileName completion:(void (^)(BOOL success))completionBlock {
+    
+    NSError *error;
+    BOOL succeed = [self.attributedText.htmlString writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:&error];
+    if(completionBlock != nil) {
+        completionBlock(succeed);
+    }
+}
+
 - (NSString *) getPDFFileName {
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

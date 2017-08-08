@@ -51,6 +51,6 @@
 - (NSString *)htmlString;
 - (void) savePDFFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
 - (void) saveRTFFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
-
-
+- (void) saveTXTFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
+- (void) saveHTMLFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
 @end
