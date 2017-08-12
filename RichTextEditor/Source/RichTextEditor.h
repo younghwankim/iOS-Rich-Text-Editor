@@ -53,4 +53,5 @@
 - (void) saveRTFFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
 - (void) saveTXTFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
 - (void) saveHTMLFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
+- (void) addFileLink:(NSString *)fileName shareLink:(NSString *)shareLink completion:(void (^)(BOOL))completionBlock;
 @end

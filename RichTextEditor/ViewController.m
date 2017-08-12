@@ -19,6 +19,9 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    //self.richTextEditor.attributedText
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -89,5 +92,15 @@
         
     }];
 }
+- (IBAction)addLink:(UIButton *)sender {
+    [self.richTextEditor addFileLink:@"google" shareLink:@"https://www.google.com" completion:^(BOOL result){
+        if(result){
+            NSLog(@"RTF Success");
+        }else{
+            NSLog(@"RTF Fail");
+        }
+        
+    }];
 
+}
 @end

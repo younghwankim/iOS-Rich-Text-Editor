@@ -763,6 +763,30 @@
     }
 }
 
+- (void) addFileLink:(NSString *)fileName shareLink:(NSString *)shareLink completion:(void (^)(BOOL))completionBlock {
+        /*
+         NSMutableAttributedString * str = [[NSMutableAttributedString alloc] initWithString:@"Google"];
+         [str addAttribute: NSLinkAttributeName value: @"http://www.google.com" range: NSMakeRange(0, str.length)];
+         yourTextView.attributedText = str;*/
+    
+    /* append string
+     
+     NSMutableAttributedString *newString = messageTextView.attibutedText;
+     [newString appendAttributedString: [[NSAttributedString alloc] initWithString: @"Who are you?"];
+     messageTextView.attibutedText = newString;
+     */
+    NSMutableAttributedString *attachStr = [[NSMutableAttributedString alloc] initWithString:@"Google"];
+    [attachStr addAttribute: NSLinkAttributeName value: shareLink range: NSMakeRange(0, attachStr.length)];
+    
+    NSMutableAttributedString *newString = [self.attributedText mutableCopy];
+    [newString appendAttributedString:attachStr];
+    self.attributedText = newString;
+    
+    if(completionBlock != nil) {
+        completionBlock(YES);
+    }
+}
+
 - (NSString *) getPDFFileName {
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
