@@ -764,19 +764,21 @@
 }
 
 - (void) addFileLink:(NSString *)fileName shareLink:(NSString *)shareLink completion:(void (^)(BOOL))completionBlock {
-        /*
-         NSMutableAttributedString * str = [[NSMutableAttributedString alloc] initWithString:@"Google"];
-         [str addAttribute: NSLinkAttributeName value: @"http://www.google.com" range: NSMakeRange(0, str.length)];
-         yourTextView.attributedText = str;*/
-    
+    /*
+     NSMutableAttributedString * str = [[NSMutableAttributedString alloc] initWithString:@"Google"];
+     [str addAttribute: NSLinkAttributeName value: @"http://www.google.com" range: NSMakeRange(0, str.length)];
+     yourTextView.attributedText = str;*/
+
     /* append string
      
      NSMutableAttributedString *newString = messageTextView.attibutedText;
      [newString appendAttributedString: [[NSAttributedString alloc] initWithString: @"Who are you?"];
      messageTextView.attibutedText = newString;
      */
-    NSMutableAttributedString *attachStr = [[NSMutableAttributedString alloc] initWithString:@"Google"];
-    [attachStr addAttribute: NSLinkAttributeName value: shareLink range: NSMakeRange(0, attachStr.length)];
+    
+    NSString *attFileString = [NSString stringWithFormat:@"  %@  ",fileName];
+    NSMutableAttributedString *attachStr = [[NSMutableAttributedString alloc] initWithString:attFileString];
+    [attachStr addAttribute: NSLinkAttributeName value: shareLink range: NSMakeRange(2, fileName.length)];
     
     NSMutableAttributedString *newString = [self.attributedText mutableCopy];
     [newString appendAttributedString:attachStr];
