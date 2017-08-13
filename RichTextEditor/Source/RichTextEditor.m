@@ -34,7 +34,7 @@
 #define RICHTEXTEDITOR_TOOLBAR_HEIGHT 40
 
 @interface RichTextEditor() <RichTextEditorToolbarDelegate, RichTextEditorToolbarDataSource>
-@property (nonatomic, strong) RichTextEditorToolbar *toolBar;
+
 
 // Gets set to YES when the user starts chaning attributes when there is no text selection (selecting bold, italic, etc)
 // Gets set to NO  when the user changes selection or starts typing
