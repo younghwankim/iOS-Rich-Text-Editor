@@ -275,14 +275,24 @@
     NSMutableAttributedString *attributedString = [self.attributedText mutableCopy];
     NSRange range = self.selectedRange;
     
+    NSString *currentValue = @"0";
+    
     if(bSuperScript){
         [attributedString addAttribute:@"NSSuperScript" value:@"0" range:range];
     }else{
         [attributedString addAttribute:@"NSSuperScript" value:@"1" range:range];
+        currentValue = @"1";
     }
 
-    [self setAttributedText:attributedString];
-    [self setSelectedRange:range];
+    if (range.length > 0) {
+        [self setAttributedText:attributedString];
+        [self setSelectedRange:range];
+    } else {
+//        NSMutableDictionary *dictionary = [self.typingAttributes mutableCopy];
+//        [dictionary setObject:currentValue forKey:@"NSSuperScript"];
+//        [self setTypingAttributes:dictionary];
+        self.typingAttributesInProgress = YES; //iOS not working well in NSSuperScript
+    }
     
     [self updateToolbarState];
 }
@@ -292,13 +302,24 @@
     NSMutableAttributedString *attributedString = [self.attributedText mutableCopy];
     NSRange range = self.selectedRange;
     
+    NSString *currentValue = @"0";
+    
     if(bSubScript){
         [attributedString addAttribute:@"NSSuperScript" value:@"0" range:range];
     }else{
         [attributedString addAttribute:@"NSSuperScript" value:@"-1" range:range];
+        currentValue = @"-1";
     }
-    [self setAttributedText:attributedString];
-    [self setSelectedRange:range];
+    
+    if (range.length > 0) {
+        [self setAttributedText:attributedString];
+        [self setSelectedRange:range];
+    } else {
+//        NSMutableDictionary *dictionary = [self.typingAttributes mutableCopy];
+//        [dictionary setObject:currentValue forKey:@"NSSuperScript"];
+//        [self setTypingAttributes:dictionary];
+        self.typingAttributesInProgress = YES; //iOS not working well in NSSuperScript
+    }
     
     [self updateToolbarState];
 }
