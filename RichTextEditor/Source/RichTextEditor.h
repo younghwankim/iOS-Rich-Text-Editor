@@ -46,6 +46,7 @@
 @property (nonatomic, weak) IBOutlet id <RichTextEditorDataSource> dataSource;
 @property (nonatomic, assign) CGFloat defaultIndentationSize;
 @property (nonatomic, strong) RichTextEditorToolbar *toolBar;
+@property (nonatomic, strong) NSMutableDictionary *myTypingAttributes;
 
 - (void)setBorderColor:(UIColor*)borderColor;
 - (void)setBorderWidth:(CGFloat)borderWidth;
@@ -55,4 +56,6 @@
 - (void) saveTXTFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
 - (void) saveHTMLFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
 - (void) addFileLink:(NSString *)fileName shareLink:(NSString *)shareLink completion:(void (^)(BOOL))completionBlock;
+
++ (BOOL)isVersionGreaterThanIOS11;
 @end

@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController ()<UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet RichTextEditor *richTextEditor;
 
 @end
@@ -21,6 +21,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     //self.richTextEditor.attributedText
+    self.richTextEditor.delegate = self;
     
 }
 
@@ -99,8 +100,15 @@
         }else{
             NSLog(@"RTF Fail");
         }
-        
     }];
+}
 
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    if([RichTextEditor isVersionGreaterThanIOS11] && (range.length == 0)) {
+        textView.typingAttributes = [self.richTextEditor.myTypingAttributes copy];
+        return YES;
+    }else{
+        return YES;
+    }
 }
 @end

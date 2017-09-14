@@ -86,7 +86,10 @@
 	
 	self.typingAttributesInProgress = NO;
 	self.defaultIndentationSize = 15;
-	
+    if([RichTextEditor isVersionGreaterThanIOS11]){
+        self.myTypingAttributes = [NSMutableDictionary dictionary];
+        self.myTypingAttributes = [self.typingAttributes mutableCopy];
+    }
 	[self setupMenuItems];
     
     //If there is text already, then we do want to update the toolbar. Otherwise we don't.
@@ -228,12 +231,24 @@
 
 - (void)richTextEditorToolbarDidSelectTextBackgroundColor:(UIColor *)color
 {
-	[self applyAttrubutesToSelectedRange:color forKey:NSBackgroundColorAttributeName];
+    if([RichTextEditor isVersionGreaterThanIOS11] && self.selectedRange.length == 0){
+        [self setTypingAttributes:@{NSBackgroundColorAttributeName:color}];
+        self.myTypingAttributes[NSBackgroundColorAttributeName] = color;
+        self.typingAttributesInProgress = YES;
+    } else {
+        [self applyAttrubutesToSelectedRange:color forKey:NSBackgroundColorAttributeName];
+    }
 }
 
 - (void)richTextEditorToolbarDidSelectTextForegroundColor:(UIColor *)color
 {
-	[self applyAttrubutesToSelectedRange:color forKey:NSForegroundColorAttributeName];
+    if([RichTextEditor isVersionGreaterThanIOS11] && self.selectedRange.length == 0){
+        [self setTypingAttributes:@{NSForegroundColorAttributeName:color}];
+        self.myTypingAttributes[NSForegroundColorAttributeName] = color;
+        self.typingAttributesInProgress = YES;
+    } else {
+        [self applyAttrubutesToSelectedRange:color forKey:NSForegroundColorAttributeName];
+    }
 }
 
 - (void)richTextEditorToolbarDidSelectUnderline:(BOOL)bUnderline
@@ -247,10 +262,17 @@
 		existingUnderlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
 	
     if(self.selectedRange.length == 0){
-        [self applyAttrubutesToSelectedRange:[NSNumber numberWithBool:!bUnderline] forKey:NSUnderlineStyleAttributeName];
+        if([RichTextEditor isVersionGreaterThanIOS11]){
+            [self setTypingAttributes:@{NSUnderlineStyleAttributeName:[NSNumber numberWithBool:!bUnderline]}];
+            self.myTypingAttributes[NSUnderlineStyleAttributeName] = [NSNumber numberWithBool:!bUnderline];
+            self.typingAttributesInProgress = YES;
+        } else {
+            [self applyAttrubutesToSelectedRange:[NSNumber numberWithBool:!bUnderline] forKey:NSUnderlineStyleAttributeName];
+        }
     }else{
         [self applyAttrubutesToSelectedRange:existingUnderlineStyle forKey:NSUnderlineStyleAttributeName];
     }
+    [self updateToolbarState];
 }
 
 - (void)richTextEditorToolbarDidSelectStrikeThrough:(BOOL)bStrikeThrough
@@ -264,10 +286,17 @@
 		existingStrikeThroughStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
 	
     if(self.selectedRange.length == 0){
-        [self applyAttrubutesToSelectedRange:[NSNumber numberWithBool:!bStrikeThrough] forKey:NSStrikethroughStyleAttributeName];
+        if([RichTextEditor isVersionGreaterThanIOS11]){
+            [self setTypingAttributes:@{NSStrikethroughStyleAttributeName:[NSNumber numberWithBool:!bStrikeThrough]}];
+            self.myTypingAttributes[NSStrikethroughStyleAttributeName] = [NSNumber numberWithBool:!bStrikeThrough];
+            self.typingAttributesInProgress = YES;
+        } else {
+            [self applyAttrubutesToSelectedRange:[NSNumber numberWithBool:!bStrikeThrough] forKey:NSStrikethroughStyleAttributeName];
+        }
     }else{
         [self applyAttrubutesToSelectedRange:existingStrikeThroughStyle forKey:NSStrikethroughStyleAttributeName];
     }
+    [self updateToolbarState];
 }
 
 - (void)richTextEditorToolbarDidSelectSuperScript:(BOOL)bSuperScript
@@ -288,6 +317,10 @@
         [self setAttributedText:attributedString];
         [self setSelectedRange:range];
     } else {
+        if([RichTextEditor isVersionGreaterThanIOS11]){
+            [self setTypingAttributes:@{@"NSSuperScript":currentValue}];
+            self.myTypingAttributes[@"NSSuperScript"] = currentValue;
+        }
 //        NSMutableDictionary *dictionary = [self.typingAttributes mutableCopy];
 //        [dictionary setObject:currentValue forKey:@"NSSuperScript"];
 //        [self setTypingAttributes:dictionary];
@@ -315,6 +348,10 @@
         [self setAttributedText:attributedString];
         [self setSelectedRange:range];
     } else {
+        if([RichTextEditor isVersionGreaterThanIOS11]){
+            [self setTypingAttributes:@{@"NSSuperScript":currentValue}];
+            self.myTypingAttributes[@"NSSuperScript"] = currentValue;
+        }
 //        NSMutableDictionary *dictionary = [self.typingAttributes mutableCopy];
 //        [dictionary setObject:currentValue forKey:@"NSSuperScript"];
 //        [self setTypingAttributes:dictionary];
@@ -349,8 +386,12 @@
 			if (paragraphStyle.firstLineHeadIndent < 0)
 				paragraphStyle.firstLineHeadIndent = 0;
 		}
-		
-		[self applyAttributes:paragraphStyle forKey:NSParagraphStyleAttributeName atRange:paragraphRange];
+        if([RichTextEditor isVersionGreaterThanIOS11] && paragraphRange.length == 0){
+            [self setTypingAttributes:@{NSParagraphStyleAttributeName:paragraphStyle}];
+            self.myTypingAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+        }else{
+            [self applyAttributes:paragraphStyle forKey:NSParagraphStyleAttributeName atRange:paragraphRange];
+        }
 	}];
 }
 
@@ -371,8 +412,12 @@
 		{
 			paragraphStyle.firstLineHeadIndent = paragraphStyle.headIndent;
 		}
-		
-		[self applyAttributes:paragraphStyle forKey:NSParagraphStyleAttributeName atRange:paragraphRange];
+        if([RichTextEditor isVersionGreaterThanIOS11] && paragraphRange.length == 0){
+            [self setTypingAttributes:@{NSParagraphStyleAttributeName:paragraphStyle}];
+            self.myTypingAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+        }else{
+            [self applyAttributes:paragraphStyle forKey:NSParagraphStyleAttributeName atRange:paragraphRange];
+        }
 	}];
 }
 
@@ -386,8 +431,12 @@
 			paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 		
 		paragraphStyle.alignment = textAlignment;
-		
-		[self applyAttributes:paragraphStyle forKey:NSParagraphStyleAttributeName atRange:paragraphRange];
+        if([RichTextEditor isVersionGreaterThanIOS11] && paragraphRange.length == 0){
+            [self setTypingAttributes:@{NSParagraphStyleAttributeName:paragraphStyle}];
+            self.myTypingAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+        }else{
+            [self applyAttributes:paragraphStyle forKey:NSParagraphStyleAttributeName atRange:paragraphRange];
+        }
 	}];
 }
 
@@ -442,7 +491,11 @@
 	// If no text exists or typing attributes is in progress update toolbar using typing attributes instead of selected text
 	if (self.typingAttributesInProgress || ![self hasText])
 	{
-		[self.toolBar updateStateWithAttributes:self.typingAttributes];
+        if([RichTextEditor isVersionGreaterThanIOS11]){
+            [self.toolBar updateStateWithAttributes:self.myTypingAttributes];
+        }else{
+            [self.toolBar updateStateWithAttributes:self.typingAttributes];
+        }
 	}
 	else
 	{
@@ -450,8 +503,9 @@
 		
 		if (location == self.text.length)
 			location --;
-		
-		[self.toolBar updateStateWithAttributes:[self.attributedText attributesAtIndex:location effectiveRange:nil]];
+        NSDictionary *dictAttributedinLocation = [self.attributedText attributesAtIndex:location effectiveRange:nil];
+        self.myTypingAttributes = [dictAttributedinLocation mutableCopy];
+		[self.toolBar updateStateWithAttributes:dictAttributedinLocation];
 	}
 }
 
@@ -493,9 +547,9 @@
 
 - (void)applyAttributeToTypingAttribute:(id)attribute forKey:(NSString *)key
 {
-	NSMutableDictionary *dictionary = [self.typingAttributes mutableCopy];
-	[dictionary setObject:attribute forKey:key];
-	[self setTypingAttributes:dictionary];
+    NSMutableDictionary *dictionary = [self.typingAttributes mutableCopy];
+    [dictionary setObject:attribute forKey:key];
+    [self setTypingAttributes:dictionary];
 }
 
 - (void)applyAttributes:(id)attribute forKey:(NSString *)key atRange:(NSRange)range
@@ -567,13 +621,29 @@
 	{		
 		self.typingAttributesInProgress = YES;
 		
-		UIFont *newFont = [self fontwithBoldTrait:isBold
-									  italicTrait:isItalic
-										 fontName:fontName
-										 fontSize:fontSize
-								   fromDictionary:self.typingAttributes];
-		if (newFont) 
-            [self applyAttributeToTypingAttribute:newFont forKey:NSFontAttributeName];
+        UIFont *newFont;
+        
+        if([RichTextEditor isVersionGreaterThanIOS11]){
+            newFont = [self fontwithBoldTrait:isBold
+                                  italicTrait:isItalic
+                                     fontName:fontName
+                                     fontSize:fontSize
+                               fromDictionary:self.myTypingAttributes];
+        }else{
+            newFont = [self fontwithBoldTrait:isBold
+                                  italicTrait:isItalic
+                                     fontName:fontName
+                                     fontSize:fontSize
+                               fromDictionary:self.typingAttributes];
+        }
+        if (newFont) {
+            if([RichTextEditor isVersionGreaterThanIOS11]){
+                [self setTypingAttributes:@{NSFontAttributeName:newFont}];
+                self.myTypingAttributes[NSFontAttributeName] = newFont;
+            } else {
+                [self applyAttributeToTypingAttribute:newFont forKey:NSFontAttributeName];
+            }
+        }
 	}
 	
 	[self updateToolbarState];
@@ -878,6 +948,14 @@
                                    pageStringSize.height);
     
     [pageString drawInRect:stringRect withFont:theFont];
+}
+
++ (BOOL)isVersionGreaterThanIOS11 {
+    if(([[[UIDevice currentDevice] systemVersion] compare:@"11.0" options:NSNumericSearch] != NSOrderedAscending)){
+        return YES;
+    }else{
+        return NO;
+    }
 }
 
 @end
