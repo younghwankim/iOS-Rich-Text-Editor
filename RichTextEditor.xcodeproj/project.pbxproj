@@ -92,6 +92,10 @@
 		192E46461F35723C0041291F /* close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 192E46431F35723C0041291F /* close@2x.png */; };
 		192E46471F35723C0041291F /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = 192E46441F35723C0041291F /* close.png */; };
 		192E46491F35961E0041291F /* s_down_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 192E46481F35961E0041291F /* s_down_arrow.png */; };
+		194010631F6B7ECA00AF0C21 /* wcheckmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1940105F1F6B7EC900AF0C21 /* wcheckmark.png */; };
+		194010641F6B7ECA00AF0C21 /* wcheckmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 194010601F6B7EC900AF0C21 /* wcheckmark@2x.png */; };
+		194010651F6B7ECA00AF0C21 /* bcheckmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 194010611F6B7ECA00AF0C21 /* bcheckmark.png */; };
+		194010661F6B7ECA00AF0C21 /* bcheckmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 194010621F6B7ECA00AF0C21 /* bcheckmark@2x.png */; };
 		19664D261F35263300D2883E /* subscript.png in Resources */ = {isa = PBXBuildFile; fileRef = 19664D221F35263300D2883E /* subscript.png */; };
 		19664D271F35263300D2883E /* subscript@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 19664D231F35263300D2883E /* subscript@2x.png */; };
 		19664D281F35263300D2883E /* superscript.png in Resources */ = {isa = PBXBuildFile; fileRef = 19664D241F35263300D2883E /* superscript.png */; };
@@ -242,6 +246,10 @@
 		192E46431F35723C0041291F /* close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "close@2x.png"; path = "../close@2x.png"; sourceTree = "<group>"; };
 		192E46441F35723C0041291F /* close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = close.png; path = ../close.png; sourceTree = "<group>"; };
 		192E46481F35961E0041291F /* s_down_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = s_down_arrow.png; path = ../s_down_arrow.png; sourceTree = "<group>"; };
+		1940105F1F6B7EC900AF0C21 /* wcheckmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wcheckmark.png; sourceTree = "<group>"; };
+		194010601F6B7EC900AF0C21 /* wcheckmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wcheckmark@2x.png"; sourceTree = "<group>"; };
+		194010611F6B7ECA00AF0C21 /* bcheckmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bcheckmark.png; sourceTree = "<group>"; };
+		194010621F6B7ECA00AF0C21 /* bcheckmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bcheckmark@2x.png"; sourceTree = "<group>"; };
 		19664D221F35263300D2883E /* subscript.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = subscript.png; path = ../subscript.png; sourceTree = "<group>"; };
 		19664D231F35263300D2883E /* subscript@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "subscript@2x.png"; path = "../subscript@2x.png"; sourceTree = "<group>"; };
 		19664D241F35263300D2883E /* superscript.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = superscript.png; path = ../superscript.png; sourceTree = "<group>"; };
@@ -341,6 +349,10 @@
 				19D36D151F36755A00AD25E3 /* FontPickerController.xib */,
 				15C4133317A48C2C0073D047 /* buttons */,
 				15C412F217A4444B0073D047 /* backcolor.png */,
+				194010611F6B7ECA00AF0C21 /* bcheckmark.png */,
+				194010621F6B7ECA00AF0C21 /* bcheckmark@2x.png */,
+				1940105F1F6B7EC900AF0C21 /* wcheckmark.png */,
+				194010601F6B7EC900AF0C21 /* wcheckmark@2x.png */,
 				15C412F317A4444B0073D047 /* bold.png */,
 				1AFAED7117C7F9CA00E450B0 /* bold@2x.png */,
 				15C412F417A4444B0073D047 /* bullist.png */,
@@ -670,15 +682,18 @@
 				15C4132017A4444B0073D047 /* justifyleft.png in Resources */,
 				15C4132117A4444B0073D047 /* justifyright.png in Resources */,
 				15C4132217A4444B0073D047 /* link.png in Resources */,
+				194010651F6B7ECA00AF0C21 /* bcheckmark.png in Resources */,
 				15C4132317A4444B0073D047 /* numlist.png in Resources */,
 				15C4132417A4444B0073D047 /* outdent.png in Resources */,
 				19664D3E1F353E2E00D2883E /* popoverArrowDown-white@2x.png in Resources */,
+				194010631F6B7ECA00AF0C21 /* wcheckmark.png in Resources */,
 				19D36D161F36755A00AD25E3 /* ColorPickerVController.xib in Resources */,
 				15C4132517A4444B0073D047 /* redo.png in Resources */,
 				15C4132617A4444B0073D047 /* removeformat.png in Resources */,
 				15C4132717A4444B0073D047 /* strikethrough.png in Resources */,
 				15C4132817A4444B0073D047 /* underline.png in Resources */,
 				15C4132917A4444B0073D047 /* undo.png in Resources */,
+				194010661F6B7ECA00AF0C21 /* bcheckmark@2x.png in Resources */,
 				15C4132A17A4444B0073D047 /* unlink.png in Resources */,
 				15C4133817A48C6D0073D047 /* button.png in Resources */,
 				15C4133917A48C6D0073D047 /* buttoncenter.png in Resources */,
@@ -697,6 +712,7 @@
 				1AFAED7417C7F9CA00E450B0 /* underline@2x.png in Resources */,
 				1AFAED7517C7F9CA00E450B0 /* bold@2x.png in Resources */,
 				1AFAED7717C8013900E450B0 /* justifyleft@2x.png in Resources */,
+				194010641F6B7ECA00AF0C21 /* wcheckmark@2x.png in Resources */,
 				1AFAED7B17C8022000E450B0 /* justifyfull@2x.png in Resources */,
 				1AFAED7C17C8022000E450B0 /* justifyright@2x.png in Resources */,
 				1AFAED7D17C8022000E450B0 /* justifycenter@2x.png in Resources */,

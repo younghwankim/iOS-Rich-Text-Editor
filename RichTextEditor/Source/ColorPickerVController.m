@@ -10,6 +10,8 @@
 
 @interface ColorPickerVController ()
 @property (nonatomic, strong) NSArray *hexColors;
+@property (nonatomic, strong) UIButton *textButton;
+@property (nonatomic, strong) UIButton *textHighlightButton;
 @end
 
 @implementation ColorPickerVController
@@ -37,18 +39,46 @@
 
 - (IBAction)textColorSelected:(id)sender
 {
-    UIButton *button = (UIButton *)sender;
+    if(self.textButton){
+        [self.textButton setImage:nil forState:UIControlStateNormal];
+    }
     
-    if(button.tag >0)
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    UIImage *blackImage = [UIImage imageNamed:@"bcheckmark" inBundle:bundle compatibleWithTraitCollection:nil];
+    UIImage *whiteImage = [UIImage imageNamed:@"wcheckmark" inBundle:bundle compatibleWithTraitCollection:nil];
+    
+    UIButton *button = (UIButton *)sender;
+    if(button.tag <= 2){
+        [button setImage:whiteImage forState:UIControlStateNormal];
+    } else{
+        [button setImage:blackImage forState:UIControlStateNormal];
+    }
+    if(button.tag >0){
         [self.colorPickerDelegate selectedColor:[self colorWithHexString:self.hexColors[button.tag-1]]];
+    }
+    self.textButton = button;
 }
 
 - (IBAction)textHighlightColorSelected:(id)sender
 {
+    if(self.textHighlightButton){
+        [self.textHighlightButton setImage:nil forState:UIControlStateNormal];
+    }
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    UIImage *whiteImage = [UIImage imageNamed:@"wcheckmark" inBundle:bundle compatibleWithTraitCollection:nil];
+    UIImage *blackImage = [UIImage imageNamed:@"bcheckmark" inBundle:bundle compatibleWithTraitCollection:nil];
+    
     UIButton *button = (UIButton *)sender;
     
-    if(button.tag >0)
+    if(button.tag==3){
+        [button setImage:blackImage forState:UIControlStateNormal];
+    }else{
+        [button setImage:whiteImage forState:UIControlStateNormal];
+    }
+    if(button.tag >0){
         [self.colorPickerDelegate selectedHighlightColor:[self colorWithHexString:self.hexColors[button.tag-1]]];
+    }
+    self.textHighlightButton = button;
 }
 
 
