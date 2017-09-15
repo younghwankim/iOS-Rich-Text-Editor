@@ -31,7 +31,7 @@
     }
     
     if(self.fontSizes == nil || [self.fontSizes count]==0){
-        self.fontSizes =  @[@9,@10,@11,@12,@13,@14,@15,@16,@17,@18,@20,@24,@36,@48,@64,@72];
+        self.fontSizes =  @[@9,@10,@11,@12,@13,@14,@15,@16,@17,@18,@20,@24,@30,@36,@48,@64,@72,@96];
     }
     
     [super viewDidLoad];
