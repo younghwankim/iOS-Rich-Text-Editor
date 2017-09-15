@@ -86,7 +86,7 @@
 	
 	self.typingAttributesInProgress = NO;
 	self.defaultIndentationSize = 15;
-    if([RichTextEditor isVersionGreaterThanIOS11]){
+    if([RichTextEditor isVersionGreaterThanEqualIOS8]){
         self.myTypingAttributes = [NSMutableDictionary dictionary];
         self.myTypingAttributes = [self.typingAttributes mutableCopy];
     }
@@ -231,7 +231,7 @@
 
 - (void)richTextEditorToolbarDidSelectTextBackgroundColor:(UIColor *)color
 {
-    if([RichTextEditor isVersionGreaterThanIOS11] && self.selectedRange.length == 0){
+    if([RichTextEditor isVersionGreaterThanEqualIOS8] && self.selectedRange.length == 0){
         [self setTypingAttributes:@{NSBackgroundColorAttributeName:color}];
         self.myTypingAttributes[NSBackgroundColorAttributeName] = color;
         self.typingAttributesInProgress = YES;
@@ -242,7 +242,7 @@
 
 - (void)richTextEditorToolbarDidSelectTextForegroundColor:(UIColor *)color
 {
-    if([RichTextEditor isVersionGreaterThanIOS11] && self.selectedRange.length == 0){
+    if([RichTextEditor isVersionGreaterThanEqualIOS8] && self.selectedRange.length == 0){
         [self setTypingAttributes:@{NSForegroundColorAttributeName:color}];
         self.myTypingAttributes[NSForegroundColorAttributeName] = color;
         self.typingAttributesInProgress = YES;
@@ -262,7 +262,7 @@
 		existingUnderlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
 	
     if(self.selectedRange.length == 0){
-        if([RichTextEditor isVersionGreaterThanIOS11]){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8]){
             [self setTypingAttributes:@{NSUnderlineStyleAttributeName:[NSNumber numberWithBool:!bUnderline]}];
             self.myTypingAttributes[NSUnderlineStyleAttributeName] = [NSNumber numberWithBool:!bUnderline];
             self.typingAttributesInProgress = YES;
@@ -286,7 +286,7 @@
 		existingStrikeThroughStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
 	
     if(self.selectedRange.length == 0){
-        if([RichTextEditor isVersionGreaterThanIOS11]){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8]){
             [self setTypingAttributes:@{NSStrikethroughStyleAttributeName:[NSNumber numberWithBool:!bStrikeThrough]}];
             self.myTypingAttributes[NSStrikethroughStyleAttributeName] = [NSNumber numberWithBool:!bStrikeThrough];
             self.typingAttributesInProgress = YES;
@@ -317,7 +317,7 @@
         [self setAttributedText:attributedString];
         [self setSelectedRange:range];
     } else {
-        if([RichTextEditor isVersionGreaterThanIOS11]){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8]){
             [self setTypingAttributes:@{@"NSSuperScript":currentValue}];
             self.myTypingAttributes[@"NSSuperScript"] = currentValue;
         }
@@ -348,7 +348,7 @@
         [self setAttributedText:attributedString];
         [self setSelectedRange:range];
     } else {
-        if([RichTextEditor isVersionGreaterThanIOS11]){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8]){
             [self setTypingAttributes:@{@"NSSuperScript":currentValue}];
             self.myTypingAttributes[@"NSSuperScript"] = currentValue;
         }
@@ -386,7 +386,7 @@
 			if (paragraphStyle.firstLineHeadIndent < 0)
 				paragraphStyle.firstLineHeadIndent = 0;
 		}
-        if([RichTextEditor isVersionGreaterThanIOS11] && paragraphRange.length == 0){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8] && paragraphRange.length == 0){
             [self setTypingAttributes:@{NSParagraphStyleAttributeName:paragraphStyle}];
             self.myTypingAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
         }else{
@@ -412,7 +412,7 @@
 		{
 			paragraphStyle.firstLineHeadIndent = paragraphStyle.headIndent;
 		}
-        if([RichTextEditor isVersionGreaterThanIOS11] && paragraphRange.length == 0){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8] && paragraphRange.length == 0){
             [self setTypingAttributes:@{NSParagraphStyleAttributeName:paragraphStyle}];
             self.myTypingAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
         }else{
@@ -431,7 +431,7 @@
 			paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 		
 		paragraphStyle.alignment = textAlignment;
-        if([RichTextEditor isVersionGreaterThanIOS11] && paragraphRange.length == 0){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8] && paragraphRange.length == 0){
             [self setTypingAttributes:@{NSParagraphStyleAttributeName:paragraphStyle}];
             self.myTypingAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
         }else{
@@ -491,7 +491,7 @@
 	// If no text exists or typing attributes is in progress update toolbar using typing attributes instead of selected text
 	if (self.typingAttributesInProgress || ![self hasText])
 	{
-        if([RichTextEditor isVersionGreaterThanIOS11]){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8]){
             [self.toolBar updateStateWithAttributes:self.myTypingAttributes];
         }else{
             [self.toolBar updateStateWithAttributes:self.typingAttributes];
@@ -499,7 +499,7 @@
 	}
 	else
 	{
-		int location = [self offsetFromPosition:self.beginningOfDocument toPosition:self.selectedTextRange.start];
+		int location = (int)[self offsetFromPosition:self.beginningOfDocument toPosition:self.selectedTextRange.start];
 		
 		if (location == self.text.length)
 			location --;
@@ -623,7 +623,7 @@
 		
         UIFont *newFont;
         
-        if([RichTextEditor isVersionGreaterThanIOS11]){
+        if([RichTextEditor isVersionGreaterThanEqualIOS8]){
             newFont = [self fontwithBoldTrait:isBold
                                   italicTrait:isItalic
                                      fontName:fontName
@@ -637,7 +637,7 @@
                                fromDictionary:self.typingAttributes];
         }
         if (newFont) {
-            if([RichTextEditor isVersionGreaterThanIOS11]){
+            if([RichTextEditor isVersionGreaterThanEqualIOS8]){
                 [self setTypingAttributes:@{NSFontAttributeName:newFont}];
                 self.myTypingAttributes[NSFontAttributeName] = newFont;
             } else {
@@ -939,19 +939,31 @@
     UIFont *theFont = [UIFont systemFontOfSize:12];
     CGSize maxSize = CGSizeMake(612, 72);
     
-    CGSize pageStringSize = [pageString sizeWithFont:theFont
-                                   constrainedToSize:maxSize
-                                       lineBreakMode:NSLineBreakByClipping];
+    CGRect textRect = [pageString boundingRectWithSize:maxSize
+                                             options:NSStringDrawingUsesLineFragmentOrigin| NSStringDrawingUsesFontLeading
+                                          attributes:@{NSFontAttributeName:theFont}
+                                             context:nil];
+    
+    CGSize pageStringSize = textRect.size;
+    
+    
+//    CGSize pageStringSize = [pageString sizeWithFont:theFont
+//                                   constrainedToSize:maxSize
+//                                       lineBreakMode:NSLineBreakByClipping];
     CGRect stringRect = CGRectMake(((612.0 - pageStringSize.width) / 2.0),
                                    720.0 + ((72.0 - pageStringSize.height) / 2.0),
                                    pageStringSize.width,
                                    pageStringSize.height);
     
-    [pageString drawInRect:stringRect withFont:theFont];
+    NSDictionary *attrsDictionary =
+        [NSDictionary dictionaryWithObjectsAndKeys: theFont, NSFontAttributeName,[NSNumber numberWithFloat:1.0], NSBaselineOffsetAttributeName, nil];
+    //[pageString drawInRect:stringRect withFont:theFont];
+    [pageString drawInRect:stringRect withAttributes:attrsDictionary];
+    
 }
 
-+ (BOOL)isVersionGreaterThanIOS11 {
-    if(([[[UIDevice currentDevice] systemVersion] compare:@"11.0" options:NSNumericSearch] != NSOrderedAscending)){
++ (BOOL)isVersionGreaterThanEqualIOS8 {
+    if(([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] != NSOrderedAscending)){
         return YES;
     }else{
         return NO;

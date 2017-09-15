@@ -57,5 +57,5 @@
 - (void) saveHTMLFile:(NSString *)fileName completion:(void (^)(BOOL))completionBlock;
 - (void) addFileLink:(NSString *)fileName shareLink:(NSString *)shareLink completion:(void (^)(BOOL))completionBlock;
 
-+ (BOOL)isVersionGreaterThanIOS11;
++ (BOOL)isVersionGreaterThanEqualIOS8;
 @end

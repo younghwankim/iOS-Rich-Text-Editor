@@ -43,7 +43,7 @@
 - (NSArray *)fontSizeSelectionForRichTextEditor:(RichTextEditor *)richTextEditor
 {
 	// pas an array of NSNumbers
-	return @[@9,@10,@11,@12,@13,@14,@17,@18,@24,@36,@48,@64,@72];
+	return @[@9,@10,@11,@12,@13,@14,@17,@18,@24,@36,@48,@64,@72,@96];
 }
 
 /*
@@ -104,7 +104,7 @@
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-    if([RichTextEditor isVersionGreaterThanIOS11] && (range.length == 0)) {
+    if([RichTextEditor isVersionGreaterThanEqualIOS8] && (range.length == 0)) {
         textView.typingAttributes = [self.richTextEditor.myTypingAttributes copy];
         return YES;
     }else{
