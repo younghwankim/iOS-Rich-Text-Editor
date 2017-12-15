@@ -94,13 +94,14 @@
 {
 	NSMutableString *htmlString = [NSMutableString string];
 	NSArray *paragraphRanges = [self rangeOfParagraphsFromTextRange:NSMakeRange(0, self.string.length-1)];
-	
+    
 	for (int i=0 ; i<paragraphRanges.count ; i++)
 	{
 		NSValue *value = [paragraphRanges objectAtIndex:i];
 		NSRange range = [value rangeValue];
 		NSDictionary *paragraphDictionary = [self attributesAtIndex:range.location effectiveRange:nil];
 		NSParagraphStyle *paragraphStyle = [paragraphDictionary objectForKey:NSParagraphStyleAttributeName];
+        
 		NSString *textAlignmentString = [self htmlTextAlignmentString:paragraphStyle.alignment];
 		
 		[htmlString appendString:@"<p "];
@@ -115,8 +116,7 @@
 		
 		if (paragraphStyle.headIndent > 0)
 			[htmlString appendFormat:@"margin-left:%.0fpx; ", paragraphStyle.headIndent];
-			
-		
+        
 		[htmlString appendString:@" \">"];
 		
 		[self enumerateAttributesInRange:range
@@ -125,6 +125,8 @@
 											  
 								  NSMutableString *fontString = [NSMutableString string];
 								  UIFont *font = [dictionary objectForKey:NSFontAttributeName];
+                                  NSURL *url = [dictionary objectForKey:NSLinkAttributeName];
+                                  
 								  UIColor *foregroundColor = [dictionary objectForKey:NSForegroundColorAttributeName];
 								  UIColor *backGroundColor = [dictionary objectForKey:NSBackgroundColorAttributeName];
 								  NSNumber *underline = [dictionary objectForKey:NSUnderlineStyleAttributeName];
@@ -177,6 +179,12 @@
 									  [fontString insertString:@"</strike>" atIndex:fontString.length];
 								  }
 								  
+                                  if(url)
+                                  {
+                                      NSString *hrefString = [NSString stringWithFormat:@"<a href=\"%@\">", url];
+                                      [fontString insertString:hrefString atIndex:0];
+                                      [fontString insertString:@"</a>" atIndex:fontString.length];
+                                  }
 								  
 								  [htmlString appendString:fontString];
 							  }];
